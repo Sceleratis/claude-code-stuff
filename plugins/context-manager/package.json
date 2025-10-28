@@ -1,0 +1,27 @@
+{
+  "name": "context-manager",
+  "version": "1.0.0",
+  "description": "Efficient context management with chunked conversation summarization",
+  "type": "module",
+  "main": "plugin/scripts/save-context.js",
+  "scripts": {
+    "build": "tsc && npm run copy-commands",
+    "copy-commands": "cp plugin/commands/*.md plugin/",
+    "dev": "tsc --watch",
+    "test": "node plugin/scripts/save-context.js --test"
+  },
+  "keywords": [
+    "claude",
+    "context",
+    "summarization"
+  ],
+  "author": "Sceleratis",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

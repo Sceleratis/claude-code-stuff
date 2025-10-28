@@ -1,0 +1,17 @@
+{
+  "name": "context-manager",
+  "version": "1.0.0",
+  "description": "Efficient context management with chunked conversation summarization",
+  "author": {
+    "name": "Sceleratis"
+  },
+  "repository": "https://github.com/Sceleratis/claude-code-stuff",
+  "license": "MIT",
+  "keywords": [
+    "context",
+    "summarization",
+    "compression",
+    "conversation",
+    "memory"
+  ]
+}
