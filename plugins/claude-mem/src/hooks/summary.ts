@@ -58,21 +58,6 @@ export async function summaryHook(input?: StopInput): Promise<void> {
     throw new Error(`Failed to request summary from worker: ${response.status} ${errorText}`);
   }
 
-  // Get session stats for user feedback
-  const db2 = new SessionStore();
-  const stats = db2.db.prepare(`
-    SELECT COUNT(*) as observation_count
-    FROM observations
-    WHERE sdk_session_id = (SELECT sdk_session_id FROM sdk_sessions WHERE id = ?)
-  `).get(sessionDbId) as { observation_count: number };
-  db2.close();
-
-  logger.debug('HOOK', 'Summary request sent successfully', { sessionId: sessionDbId, observations: stats.observation_count });
-
-  // Create context message with stats
-  const statsMessage = stats.observation_count > 0
-    ? `📝 claude-mem: Session summarized | ${stats.observation_count} observations captured`
-    : `📝 claude-mem: Session summarized`;
-
-  console.log(createHookResponse('Stop', true, { context: statsMessage }));
+  logger.debug('HOOK', 'Summary request sent successfully', { sessionId: sessionDbId });
+  console.log(createHookResponse('Stop', true));
 }

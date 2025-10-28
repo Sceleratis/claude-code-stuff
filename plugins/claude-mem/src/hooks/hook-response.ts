@@ -53,36 +53,17 @@ function buildHookResponse(
     };
   }
 
-  if (hookType === 'UserPromptSubmit') {
+  if (hookType === 'UserPromptSubmit' || hookType === 'PostToolUse') {
     return {
       continue: true,
-      suppressOutput: true,
-      hookSpecificOutput: {
-        hookEventName: 'UserPromptSubmit',
-        additionalContext: success ? '🧠 claude-mem: Prompt tracked' : '⚠️ claude-mem: Tracking failed'
-      }
-    };
-  }
-
-  if (hookType === 'PostToolUse') {
-    return {
-      continue: true,
-      suppressOutput: true,
-      hookSpecificOutput: {
-        hookEventName: 'PostToolUse',
-        additionalContext: success ? '💾 claude-mem: Tool observation saved' : '⚠️ claude-mem: Save failed'
-      }
+      suppressOutput: true
     };
   }
 
   if (hookType === 'Stop') {
     return {
       continue: true,
-      suppressOutput: true,
-      hookSpecificOutput: {
-        hookEventName: 'Stop',
-        additionalContext: success ? '📝 claude-mem: Session summarized' : '⚠️ claude-mem: Summary failed'
-      }
+      suppressOutput: true
     };
   }
 
