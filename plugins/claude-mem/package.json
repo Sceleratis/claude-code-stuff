@@ -36,6 +36,7 @@
   "scripts": {
     "build": "node scripts/build-hooks.js",
     "build:hooks": "node scripts/build-hooks.js",
+    "prepare": "npm run build",
     "release": "node scripts/publish.js",
     "prepublishOnly": "npm run build",
     "test": "node --test tests/",
