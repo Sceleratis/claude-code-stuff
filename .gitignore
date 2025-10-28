@@ -140,3 +140,5 @@ vite.config.ts.timestamp-*
 /.claude
 /.history
 /.lh
+__pycache__/
+*.pyc
