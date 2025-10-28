@@ -13,7 +13,8 @@ claude-code-stuff/
 ├── .claude-plugin/
 │   └── marketplace.json       # Marketplace registry
 ├── plugins/
-│   └── claude-mem/           # Memory compression plugin
+│   ├── claude-mem/           # Memory compression plugin
+│   └── context-manager/      # Context summarization plugin
 └── README.md
 ```
 
@@ -36,6 +37,25 @@ Automatically captures tool usage, generates semantic summaries, and restores co
 **License**: AGPL-3.0
 
 [View plugin documentation](./plugins/claude-mem/README.md)
+
+### context-manager (v1.0.0)
+
+**Efficient context management with chunked conversation summarization**
+
+Solves the problem of Claude Code's `/compact` failing on large conversations by using chunked, recursive summarization. Features include:
+
+- Chunked processing of conversation history (never overwhelms context)
+- Recursive summarization using Claude API
+- Persistent storage in `.claude/context/` with timestamps
+- Easy restoration of previous contexts
+- Compression statistics and progress tracking
+- Works when `/compact` fails
+
+**Tech Stack**: TypeScript, Node.js 18+, Anthropic SDK
+
+**License**: MIT
+
+[View plugin documentation](./plugins/context-manager/README.md)
 
 ## Installation
 
@@ -124,6 +144,7 @@ This is a personal marketplace. Feel free to fork and adapt for your own use.
 ## Support
 
 For issues with specific plugins, see their individual documentation:
-- [claude-mem issues](./plugins/claude-mem/README.md)
+- [claude-mem](./plugins/claude-mem/README.md)
+- [context-manager](./plugins/context-manager/README.md)
 
 For marketplace structure issues, open an issue in this repository.
