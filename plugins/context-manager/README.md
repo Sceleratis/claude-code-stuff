@@ -8,20 +8,19 @@ The Context Manager plugin solves a critical problem with Claude Code's built-in
 
 ## Features
 
-- 🧩 **Chunked Processing**: Splits conversations into manageable chunks
-- 🔄 **Recursive Summarization**: Iteratively summarizes until reaching target size
+- 🤖 **Claude-Powered**: Uses Claude's own context to create summaries (no API key needed!)
+- 📝 **Progressive Summarization**: Breaks large contexts into logical sections
 - 💾 **Persistent Storage**: Saves summaries to `.claude/context/` with timestamps
-- 📊 **Compression Stats**: Shows token reduction and compression ratios
 - 🔍 **Easy Restoration**: Quick access to previous context summaries
-- ⚡ **Smart Targeting**: Keeps summaries under 5k tokens for efficient loading
+- 🎯 **Focused Extraction**: Captures key decisions, code changes, and next steps
+- ⚡ **No External Dependencies**: Works entirely through Claude Code's built-in tools
 
 ## Installation
 
 ### Prerequisites
 
-- Node.js 18+ installed
-- Claude Code CLI
-- `ANTHROPIC_API_KEY` environment variable set
+- Claude Code CLI installed
+- That's it! No API keys or external dependencies needed
 
 ### Install Plugin
 
@@ -50,37 +49,19 @@ npm run build
 ```
 
 **What it does:**
-1. Exports current conversation to temporary file
-2. Asks for a brief description
-3. Chunks conversation into ~6k token pieces
-4. Recursively summarizes using Claude API
+1. Asks for a brief description
+2. Claude analyzes its own conversation context
+3. Creates progressive summary in logical sections
+4. Synthesizes final comprehensive summary
 5. Saves to `.claude/context/yyyyMMDD-HHmm - description.md`
 
-**Example output:**
+**Example:**
 ```
-🔄 Starting context save process...
-📖 Reading conversation file...
-🔍 Parsing conversation...
-   Found 250 messages
-
-✂️  Chunking conversation...
-   Created 8 chunks
-   Total estimated tokens: 45000
-
-🤖 Starting recursive summarization...
-   Processing chunk 1/8...
-   Processing chunk 2/8...
-   ...
-   Creating final summary from 3 summaries...
-
-✅ Summarization complete!
-   Summary tokens: 4200
-   Compression: 45000:4200 (91% reduction)
-
-💾 Saving summary...
-   ✅ Saved to: .claude/context/20251028-1120 - Feature implementation.md
-
-🎉 Context save complete!
+User: /save-context
+Claude: "What would you like to call this context summary?"
+User: "Feature implementation and testing"
+Claude: [Analyzes conversation, creates structured summary]
+Claude: "✅ Context saved to .claude/context/20251028-1120 - Feature implementation and testing.md"
 ```
 
 ### Restore Previous Context
@@ -90,65 +71,54 @@ npm run build
 ```
 
 **What it does:**
-- Loads most recent context summary
-- Displays the summary for your review
+- Lists available context files (if needed)
+- Loads most recent or specified context
+- Displays summary in readable format
+- Offers to continue where you left off
 
-**List available contexts:**
-```bash
-/restore-context --list
+**Example:**
 ```
-
-**Load specific context:**
-```bash
-/restore-context "20251028-1120 - Feature implementation.md"
+User: /restore-context
+Claude: "I found your most recent context from Oct 28, 11:20 AM (Feature implementation):"
+Claude: [Displays the full summary]
+Claude: "Would you like to continue where we left off?"
 ```
 
 ## How It Works
 
 ### The Problem
 
-Claude Code's `/compact` tries to process the entire conversation at once:
-```
-[Full conversation] → [Claude API] → [Summary]
-                      ↓
-              Context overflow! ❌
-```
+Claude Code's `/compact` tries to process the entire conversation at once, which can overwhelm the context window and fail.
 
 ### Our Solution
 
-Chunked recursive summarization:
+**Claude-powered progressive summarization:**
 ```
-[Conversation] → [Chunk 1, Chunk 2, ..., Chunk N]
-                      ↓
-[Summary 1, Summary 2, ..., Summary N]
-                      ↓
-[Grouped summaries] → [Summary A, Summary B, Summary C]
-                      ↓
-           [Final summary] ✅
+User invokes /save-context
+       ↓
+Claude analyzes its own context in logical sections
+       ↓
+Claude synthesizes comprehensive summary
+       ↓
+Claude saves to .claude/context/ ✅
 ```
 
 **Key advantages:**
-- Never overwhelms context window
-- Preserves important details through recursive merging
-- Handles conversations of any size
-- Shows progress throughout
+- No external API calls needed
+- Uses Claude's existing context window intelligently
+- No additional setup or API keys required
+- Works when `/compact` fails
+- Creates persistent, reloadable summaries
 
 ## Configuration
 
-### Environment Variables
-
-- `ANTHROPIC_API_KEY` (required): Your Anthropic API key
-- Default model: `claude-sonnet-4-20250514`
-- Target summary size: 5000 tokens
-- Chunk size: 6000 tokens
+No configuration needed! The plugin works out of the box using Claude Code's built-in capabilities.
 
 ### Customization
 
-Edit `src/lib/summarizer.ts` to adjust:
-- Model selection
-- Max tokens per request
-- Target summary size
-- Summarization prompts
+You can customize the summary format by editing:
+- `plugin/commands/save-context.md` - Adjust the markdown template and instructions
+- `plugin/commands/restore-context.md` - Modify how contexts are displayed
 
 ## File Structure
 
@@ -214,67 +184,29 @@ Saved contexts use this markdown format:
 
 ## Development
 
-### Build
+The plugin uses slash commands that direct Claude to perform the summarization work. No build process or external scripts required!
 
-```bash
-npm run build        # Compile TypeScript + copy commands
-npm run dev          # Watch mode
-```
+### Customization
 
-### Testing
+To modify how summaries are created or displayed:
+1. Edit `plugin/commands/save-context.md` for save behavior
+2. Edit `plugin/commands/restore-context.md` for restore behavior
+3. Adjust the markdown template format as needed
 
-```bash
-# Create test conversation file
-echo "user: Hello\nassistant: Hi there!" > /tmp/test-conv.txt
+### Advanced Usage
 
-# Test save (requires API key)
-node plugin/scripts/save-context.js /tmp/test-conv.txt "Test" .
-
-# Test restore
-node plugin/scripts/restore-context.js --list
-node plugin/scripts/restore-context.js
-```
-
-## Troubleshooting
-
-### "ANTHROPIC_API_KEY not set"
-
-Set your API key:
-```bash
-export ANTHROPIC_API_KEY="your-key-here"
-```
-
-### Build fails
-
-Ensure TypeScript and dependencies are installed:
-```bash
-npm install
-```
-
-### Script not found
-
-Make sure you've built the plugin:
-```bash
-npm run build
-```
-
-### API rate limits
-
-The scripts include 500ms delays between API calls. If you hit rate limits, you can increase this in `src/lib/summarizer.ts`:
-```typescript
-await new Promise(resolve => setTimeout(resolve, 1000)); // Increase delay
-```
+The `src/` directory contains TypeScript utilities for potential future enhancements (like automated chunk processing), but they're not currently used by the slash commands.
 
 ## Comparison with /compact
 
 | Feature | /compact | context-manager |
 |---------|----------|-----------------|
-| Works with large conversations | ❌ Fails | ✅ Always works |
-| Chunked processing | ❌ No | ✅ Yes |
+| Works with large conversations | ❌ Fails | ✅ Works |
+| Progressive processing | ❌ No | ✅ Yes |
 | Persistent storage | ❌ No | ✅ Yes |
 | Restoration | ❌ No | ✅ Yes |
-| Progress feedback | ❌ Limited | ✅ Detailed |
-| Compression stats | ❌ No | ✅ Yes |
+| Setup required | ✅ None | ✅ None |
+| API keys needed | ❌ No | ❌ No |
 
 ## Future Enhancements
 
