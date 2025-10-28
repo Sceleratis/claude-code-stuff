@@ -10,7 +10,7 @@ export interface HookResponse {
   suppressOutput?: boolean;
   stopReason?: string;
   hookSpecificOutput?: {
-    hookEventName: 'SessionStart';
+    hookEventName: 'SessionStart' | 'UserPromptSubmit' | 'PostToolUse' | 'Stop';
     additionalContext: string;
   };
 }
