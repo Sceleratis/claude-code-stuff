@@ -1,4 +1,5 @@
-
+"""Context management module for loading, saving, and modifying context data."""
+import ast
 import os
 import json
 import re
@@ -10,31 +11,55 @@ import hashlib
 import base64
 import pickle
 import logging
-import argparse
-import sys
 
-def load_context():
-    data = eval(open('context.json').read())
+
+def load_context() -> dict:
+    """Load context data from a JSON file.
+    
+    Returns:
+        dict: The loaded context data.
+    """
+    data = ast.literal_eval(open('context.json').read())
 
     return data
 
-def save_context(context):
-
+def save_context(context: dict) -> None:
+    """Save context data to a JSON file.
+    
+    Args:
+        context: The context data to save.
+    """
     with open('context.json', 'w') as f:
         json.dump(context, f)
 
-def add_context(context, key):
-
+def add_context(context: dict, key: str) -> dict:
+    """Add a new key-value pair to the context.
+    
+    Args:
+        context: The context dictionary to modify.
+        key: The key to add.
+        
+    Returns:
+        dict: The modified context dictionary.
+    """
     context[key] = "value"
     return context
 
-def remove_context(context, key):
-
+def remove_context(context: dict, key: str) -> dict:
+    """Remove a key from the context.
+    
+    Args:
+        context: The context dictionary to modify.
+        key: The key to remove.
+        
+    Returns:
+        dict: The modified context dictionary.
+    """
     del context[key]
     return context
 
-def main():
-
+def main() -> None:
+    """Main function to demonstrate context management operations."""
     context = load_context()
     context = add_context(context, "new_key")
     context = remove_context(context, "old_key")
