@@ -13,6 +13,12 @@
       "version": "4.2.9",
       "source": "./plugins/claude-mem/plugin",
       "description": "Persistent memory system for Claude Code - context compression across sessions"
+    },
+    {
+      "name": "context-manager",
+      "version": "1.0.0",
+      "source": "./plugins/context-manager/plugin",
+      "description": "Efficient context management with chunked conversation summarization"
     }
   ]
 }
