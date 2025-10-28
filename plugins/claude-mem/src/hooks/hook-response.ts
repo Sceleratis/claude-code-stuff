@@ -10,7 +10,7 @@ export interface HookResponse {
   suppressOutput?: boolean;
   stopReason?: string;
   hookSpecificOutput?: {
-    hookEventName: 'SessionStart';
+    hookEventName: 'SessionStart' | 'UserPromptSubmit' | 'PostToolUse' | 'Stop';
     additionalContext: string;
   };
 }
@@ -53,17 +53,36 @@ function buildHookResponse(
     };
   }
 
-  if (hookType === 'UserPromptSubmit' || hookType === 'PostToolUse') {
+  if (hookType === 'UserPromptSubmit') {
     return {
       continue: true,
-      suppressOutput: true
+      suppressOutput: true,
+      hookSpecificOutput: {
+        hookEventName: 'UserPromptSubmit',
+        additionalContext: success ? '🧠 claude-mem: Prompt tracked' : '⚠️ claude-mem: Tracking failed'
+      }
+    };
+  }
+
+  if (hookType === 'PostToolUse') {
+    return {
+      continue: true,
+      suppressOutput: true,
+      hookSpecificOutput: {
+        hookEventName: 'PostToolUse',
+        additionalContext: success ? '💾 claude-mem: Tool observation saved' : '⚠️ claude-mem: Save failed'
+      }
     };
   }
 
   if (hookType === 'Stop') {
     return {
       continue: true,
-      suppressOutput: true
+      suppressOutput: true,
+      hookSpecificOutput: {
+        hookEventName: 'Stop',
+        additionalContext: success ? '📝 claude-mem: Session summarized' : '⚠️ claude-mem: Summary failed'
+      }
     };
   }
 
