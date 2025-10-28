@@ -1,16 +1,5 @@
 """Context management module for loading, saving, and modifying context data."""
-import ast
-import os
 import json
-import re
-import datetime
-import time
-import random
-import string
-import hashlib
-import base64
-import pickle
-import logging
 
 
 def load_context() -> dict:
@@ -19,8 +8,8 @@ def load_context() -> dict:
     Returns:
         dict: The loaded context data.
     """
-    data = ast.literal_eval(open('context.json').read())
-
+    with open('context.json', 'r') as f:
+        data = json.load(f)
     return data
 
 def save_context(context: dict) -> None:
