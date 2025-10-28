@@ -56,7 +56,23 @@ export async function newHook(input?: UserPromptSubmitInput): Promise<void> {
       throw new Error(`Failed to initialize session: ${response.status} ${errorText}`);
     }
 
-    console.log(createHookResponse('UserPromptSubmit', true));
+    // Announce stats every 5 prompts for user visibility
+    const shouldAnnounce = promptNumber % 5 === 0;
+    let announceContext: string | undefined;
+
+    if (shouldAnnounce) {
+      const stats = db.db.prepare(`
+        SELECT COUNT(*) as observation_count
+        FROM observations
+        WHERE sdk_session_id = (SELECT sdk_session_id FROM sdk_sessions WHERE id = ?)
+      `).get(sessionDbId) as { observation_count: number };
+
+      if (stats.observation_count > 0) {
+        announceContext = `🧠 claude-mem: ${stats.observation_count} observations captured | ${promptNumber} prompts`;
+      }
+    }
+
+    console.log(createHookResponse('UserPromptSubmit', true, { context: announceContext }));
   } finally {
     db.close();
   }
